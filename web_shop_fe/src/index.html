@@ -9,17 +9,17 @@
     <body>
         <main class="main-content">
             <header class="main-content__sidebar">
-                <a href="#">
-                    <img alt="logo" src="" />
+                <a href="/">
+                    <img alt="logo"  />
                 </a>
 
                 <nav class="main-menu">
                     <ul class="main-menu__list">
                         <li class="main-menu__item">
-                            <a href="#"  class="main-menu__link">Home</a>
+                            <a href="/"  class="main-menu__link">Home</a>
                         </li>
                         <li class="main-menu__item">
-                            <a href="" class="main-menu__link">T-shirts</a>
+                            <a href="/products" class="main-menu__link">T-shirts</a>
                         </li>
                         <li class="main-menu__item">
                             <a href="" class="main-menu__link">Hoodies</a>
@@ -65,9 +65,13 @@
                     </a>
                 </article>
             </section>-->
-            <div class="__dynamic-content__" data-template="./products.html" data-url-pattern="/">     
+            <div class="__dynamic-content__" data-template="./products-home.tpl.html" data-url-pattern="/">     
                 <i class="gg-spinner-two"></i>
             </div>
+
+            <div class="__dynamic-content__" data-template="./products-list.tpl.html" data-url-pattern="/products">     
+                <i class="gg-spinner-two"></i>
+            </div>            
         </main>
 
         <footer class="footer-content">

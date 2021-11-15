@@ -13,11 +13,15 @@ import './layout.css';
 - accesses the appropiated "windows.$renders" so it can fetch data and bind it to the template
 - outputs the processed template to the dynamic container, aka, .__dynamic-content__
 */
-const renderTemplates = () => {
+const renderTemplates = async(force) => {
+    if (force) document.body = await getTemplate('/');
+    const $oldContainers = document.querySelectorAll('.__computed-content__');
+    $oldContainers.forEach(c => c.outerHTML = '');
+
     const $containers = document.querySelectorAll('.__dynamic-content__');
     $containers.forEach(async ($el) => {
         const templatePath = $el.dataset.template;
-        const urlPattern = $el.dataset.urlPattern;
+        const urlPattern = $el.dataset.urlPattern + '$'; // match EOL otherwise this matches all pages
 
         if( location.pathname.match(new RegExp(urlPattern, 'i')) ) {
             getTemplate(templatePath)
@@ -36,6 +40,8 @@ const renderTemplates = () => {
                     $el.outerHTML = template.innerHTML;
                 }
             })
+        } else { // remove unused container
+            $el.outerHTML = '';
         }
     })
 };
@@ -63,6 +69,18 @@ const getTemplate = (templatePath) => {
         });
 };
 
+window.getTemplate = getTemplate;
+
+// to parse Object paths
+const getObjPropByPath = (obj, path = '') => {
+    if (path.split('.').length <= 1) return obj[path];
+
+    /* ⚠ DONT USE THIS IN PRODUCTION */
+    // all this code is proof of concept an may not follow the best practices at times
+    // like the use of "eval", I just want to simplify my life ...             
+    return eval(`obj.${path}`);
+}
+
 /*
 @ global render methods definitions for different contents
 - 
@@ -88,22 +106,32 @@ window.$renders = {
     
             .then((json) => {
                 console.log('api result')
-                json.forEach(x => {
+                json.forEach(model => {
                     const $item = $childTemplate.cloneNode(true);
-                    console.log($item); 
+                    
+                    // data bind current limitation: It can either bind just one attribute; or just one innerHTML value injection
                     $item.querySelectorAll('[data-bind]').forEach($el => {
-                        if($el.dataset.bind && !$el.dataset.bindAttr) {
-                            $el.innerHTML = x[$el.dataset.bind];
+                        let dataBindValue = getObjPropByPath(model, $el.dataset.bind);
 
-                        } else if ($el.dataset.bindAttr && $el.dataset.bind) {
-                            $el.setAttribute($el.dataset.bindAttr, x[$el.dataset.bind]);
-                        }                        
+                        if($el.dataset.bindFn) {
+                            // ⚠ CLOSE YOUR EYES! IT'S EVAL TIME AGAIN 😂
+                            // this will allow as to perform extra processing to the data bind value 😎
+                            dataBindValue = eval($el.dataset.bindFn)(dataBindValue);
+                        }
+
+                        if($el.dataset.bind && !$el.dataset.bindAttr) { // to inject content value
+                            $el.innerHTML = dataBindValue;
+
+                        } else if ($el.dataset.bindAttr && $el.dataset.bind) { // to inject attr value
+                            $el.setAttribute($el.dataset.bindAttr, dataBindValue);
+                        }
                     })
                   
                     // Change this to div.childNodes to support multiple top-level nodes
                     $parent.appendChild($item); 
                 })
 
+                $parent.classList.add('__computed-content__');
                 return $parent.outerHTML;
 
             })
@@ -117,3 +145,30 @@ window.$renders = {
 
 // start dynamically render templates after dom ready
 document.addEventListener('DOMContentLoaded', renderTemplates, { once: true });
+document.addEventListener('DOMContentLoaded', () => console.dir(location.pathname), { once: true });
+
+// https://stackoverflow.com/a/33616981/1869192
+const interceptClickEvent = (e) => {
+    const target = e.target || e.srcElement;
+    if (target.tagName === 'A') {
+        const href = target.getAttribute('href');
+
+        if (true) {
+            if(href !== location.pathname) {
+
+                history.pushState(null, null, href);
+                renderTemplates(true);
+            }
+            //tell the browser not to respond to the link click
+           e.preventDefault();
+        }
+    }
+}
+
+
+// this helps us to intercept navigations and dynamically render content 😎
+if (document.addEventListener) {
+    document.addEventListener('click', interceptClickEvent);
+} else if (document.attachEvent) {
+    document.attachEvent('onclick', interceptClickEvent);
+}
