@@ -7,4 +7,5 @@ export default defineConfig({
     minify: false, // leave output code readable
     polyfillModulePreload: false, // https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill
   },
+  publicDir: '../public' 
 })
