@@ -2,7 +2,7 @@
   "name": "web_shop_fe",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "start cmd /k json-server --watch ../db.json --port=8008 & vite",
     "build": "vite build",
     "serve": "vite preview"
   },
