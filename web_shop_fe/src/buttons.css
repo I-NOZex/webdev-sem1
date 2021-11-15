@@ -1,0 +1,19 @@
+.btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    display: block;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn__primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btn__secondary {
+    background-color: var(--secondary);
+    color: var(--white);
+}
