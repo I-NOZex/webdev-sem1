@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Vite Afpp</title>
     </head>
@@ -65,13 +65,17 @@
                     </a>
                 </article>
             </section>-->
-            <div class="__dynamic-content__" data-template="./products-home.tpl.html" data-url-pattern="/">     
+            <div class="__dynamic-content__" data-template="/products-home.tpl.html" data-url-pattern="/">     
                 <i class="gg-spinner-two"></i>
             </div>
 
-            <div class="__dynamic-content__" data-template="./products-list.tpl.html" data-url-pattern="/products">     
+            <div class="__dynamic-content__" data-template="/products-list.tpl.html" data-url-pattern="/products">     
                 <i class="gg-spinner-two"></i>
-            </div>            
+            </div>
+            
+            <div class="__dynamic-content__" data-template="/product-detail.tpl.html" data-url-pattern="/products/\d+">     
+                <i class="gg-spinner-two"></i>
+            </div>                  
         </main>
 
         <footer class="footer-content">

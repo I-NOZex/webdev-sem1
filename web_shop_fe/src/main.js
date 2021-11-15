@@ -53,7 +53,7 @@ const renderTemplates = async(force) => {
 - parses
 */
 const getTemplate = (templatePath) => {
-    return fetch(templatePath)
+    return fetch(location.origin + templatePath)
         // The API call was successful!
         .then((response) => response.text())
 
@@ -130,6 +130,53 @@ window.$renders = {
                     // Change this to div.childNodes to support multiple top-level nodes
                     $parent.appendChild($item); 
                 })
+
+                $parent.classList.add('__computed-content__');
+                return $parent.outerHTML;
+
+            })
+            .catch((err) => {
+                // There was an error
+                console.warn('Something went wrong.', err);
+            });
+
+    },
+
+    renderProductDetail: (contentUrl, template) => {
+            console.log('renderProductDetail')
+    
+            const $parent = template.firstElementChild;
+            const $childTemplate = $parent.firstElementChild.cloneNode(true);
+            $parent.innerHTML = '';
+    
+            return fetch(contentUrl)
+            // The API call was successful!
+            .then((response) => response.json())
+    
+            .then((model) => {
+                console.log('api result')
+                    const $item = $childTemplate.cloneNode(true);
+                    
+                    // data bind current limitation: It can either bind just one attribute; or just one innerHTML value injection
+                    $item.querySelectorAll('[data-bind]').forEach($el => {
+                        let dataBindValue = getObjPropByPath(model, $el.dataset.bind);
+
+                        if($el.dataset.bindFn) {
+                            // ⚠ CLOSE YOUR EYES! IT'S EVAL TIME AGAIN 😂
+                            // this will allow as to perform extra processing to the data bind value 😎
+                            dataBindValue = eval($el.dataset.bindFn)(dataBindValue);
+                        }
+
+                        if($el.dataset.bind && !$el.dataset.bindAttr) { // to inject content value
+                            $el.innerHTML = dataBindValue;
+
+                        } else if ($el.dataset.bindAttr && $el.dataset.bind) { // to inject attr value
+                            $el.setAttribute($el.dataset.bindAttr, dataBindValue);
+                        }
+                    })
+                  
+                    // Change this to div.childNodes to support multiple top-level nodes
+                    $parent.appendChild($item); 
 
                 $parent.classList.add('__computed-content__');
                 return $parent.outerHTML;
