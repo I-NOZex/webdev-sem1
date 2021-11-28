@@ -200,30 +200,19 @@ class TemplateEngine {
             let dataBindValues = this.getObjPropByPath(model, $el.dataset.bindLoop);
 
             $el.innerHTML = $el.firstElementChild.outerHTML; //to reset the template for model updates
-            const $childBindingContainers = $el.querySelectorAll('[data-bind-content],[data-bind-attrs],[data-bind-loop]');
-            //const templateChilds = $el.childElementCount;
-            
+
             dataBindValues?.forEach((subModel) => {
-                //const $loopContainer = templateChilds > 1 ? document.createElement('div') : $el.firstElementChild.cloneNode();
-                const $loopContainer = $el.firstElementChild.cloneNode();
-                //$loopContainer
-                //console.log($loopContainer)
-                $el.appendChild($loopContainer);     
-                $childBindingContainers.forEach($child => {
-                    if($child.parentElement != $el.firstElementChild) {
-                        let $childTemplate = $child.cloneNode(true);
-                        $loopContainer.firstElementChild?.appendChild($childTemplate)
-                        this.mapBind($childTemplate, subModel, true);
+                const $loopContainer = $el.firstElementChild.cloneNode(true);
+                $el.appendChild($loopContainer);
 
-                    } else {
-                        let $childTemplate = $child.cloneNode();
-                        $loopContainer.appendChild($childTemplate);
-                        this.mapBind($childTemplate, subModel, true);
-                    }
-                })
+                const $childBindContainer = $loopContainer.querySelectorAll('*');
+                
+                $childBindContainer.forEach($child => {
+                    this.mapBind($child, subModel, true);
+                })                
             })
-
             $el.firstElementChild.remove();
+
     
         }
     };
@@ -231,7 +220,6 @@ class TemplateEngine {
     bindData = async($template, model) => {
         const $bindingContainers =  $template.querySelectorAll('[data-bind-content],[data-bind-attrs],[data-bind-loop]');
         const computedModel = await model;
-        console.log(computedModel)
         $bindingContainers.forEach(($el) => this.mapBind($el, computedModel));    
     }
 
