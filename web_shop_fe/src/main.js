@@ -5,6 +5,13 @@ import './buttons.css';
 import './icons.css';
 import './layout.css';
 
+const VIEW_MODEL = {
+    currentProduct: {},
+    resultCount: 0,
+    resultPage: 0,
+    selectedFilters: []
+}
+
 /*
 @ parses document to find dynamic containers denoted by the class "__dynamic-content__"
 - reads 'data-template' attr to fetch the template file location
@@ -30,15 +37,24 @@ const renderTemplates = async(force) => {
                 - calls 'data-render-fn' attr, if the template needs data bindings
                 - fetchs 'data-content-url' to get the data to be bind
                 */
-                const $container = template.firstElementChild;
-                var fn = window.$renders[$container.dataset.renderFn];
-                var contentUrl = $container.dataset.contentUrl;
-
-                if (fn && typeof fn === "function") {
-                    $el.outerHTML =  await fn.apply($el, [contentUrl, template]);    
-                } else {
-                    $el.outerHTML = template.innerHTML;
+               let $html = '';
+                for(let i = 0; i < template.childElementCount; i++) {
+                    const $container = template.children[i];
+                    const fn = window.$renders[$container.dataset.renderFn];
+                    const contentUrl = $container.dataset.contentUrl;
+    
+                    if (fn && typeof fn === "function") { // dynamic rendering
+                        $html +=  await fn.apply($el, [contentUrl, $container]);    
+                    } else { // static rendering
+                        $html += $container.outerHTML;
+                    }
                 }
+
+
+                $el.outerHTML = $html;
+                document.body.setAttribute('data-page', location.pathname);
+                setMenuActiveLink();
+
             })
         } else { // remove unused container
             $el.outerHTML = '';
@@ -81,6 +97,33 @@ const getObjPropByPath = (obj, path = '') => {
     return eval(`obj.${path}`);
 }
 
+const mountBinds = ($childTemplate, model) => {
+    const $item = $childTemplate.cloneNode(true);
+
+    // data bind current limitation: It can either bind just one attribute; or just one innerHTML value injection
+    $item.querySelectorAll('[data-bind]').forEach($el => {
+        let dataBindValue = getObjPropByPath(model, $el.dataset.bind);
+
+        if($el.dataset.bindFn) {
+            // ⚠ CLOSE YOUR EYES! IT'S EVAL TIME AGAIN 😂
+            // this will allow as to perform extra processing to the data bind value 😎
+            dataBindValue = eval($el.dataset.bindFn)(dataBindValue);
+        }
+
+        if($el.dataset.bind && !$el.dataset.bindAttr) { // to inject content value
+            if ($el.innerHTML.includes('{{value}}'))
+                $el.innerHTML = $el.innerHTML.replace('{{value}}', dataBindValue);
+            else
+                $el.innerHTML = dataBindValue;
+
+        } else if ($el.dataset.bindAttr && $el.dataset.bind) { // to inject attr value
+            $el.setAttribute($el.dataset.bindAttr, dataBindValue);
+        }
+    });
+
+    return $item;
+}
+
 /*
 @ global render methods definitions for different contents
 - 
@@ -96,7 +139,7 @@ window.$renders = {
     renderProductsHome: (contentUrl, template) => {
             console.log('renderProductsHome')
     
-            const $parent = template.firstElementChild;
+            const $parent = template;
             const $childTemplate = $parent.firstElementChild.cloneNode(true);
             $parent.innerHTML = '';
     
@@ -107,26 +150,8 @@ window.$renders = {
             .then((json) => {
                 console.log('api result')
                 json.forEach(model => {
-                    const $item = $childTemplate.cloneNode(true);
-                    
-                    // data bind current limitation: It can either bind just one attribute; or just one innerHTML value injection
-                    $item.querySelectorAll('[data-bind]').forEach($el => {
-                        let dataBindValue = getObjPropByPath(model, $el.dataset.bind);
+                    const $item = mountBinds($childTemplate, model);
 
-                        if($el.dataset.bindFn) {
-                            // ⚠ CLOSE YOUR EYES! IT'S EVAL TIME AGAIN 😂
-                            // this will allow as to perform extra processing to the data bind value 😎
-                            dataBindValue = eval($el.dataset.bindFn)(dataBindValue);
-                        }
-
-                        if($el.dataset.bind && !$el.dataset.bindAttr) { // to inject content value
-                            $el.innerHTML = dataBindValue;
-
-                        } else if ($el.dataset.bindAttr && $el.dataset.bind) { // to inject attr value
-                            $el.setAttribute($el.dataset.bindAttr, dataBindValue);
-                        }
-                    })
-                  
                     // Change this to div.childNodes to support multiple top-level nodes
                     $parent.appendChild($item); 
                 })
@@ -145,7 +170,7 @@ window.$renders = {
     renderProductDetail: (contentUrl, template) => {
             console.log('renderProductDetail')
     
-            const $parent = template.firstElementChild;
+            const $parent = template;
             const $childTemplate = $parent.firstElementChild.cloneNode(true);
             $parent.innerHTML = '';
     
@@ -155,28 +180,11 @@ window.$renders = {
     
             .then((model) => {
                 console.log('api result')
-                    const $item = $childTemplate.cloneNode(true);
-                    
-                    // data bind current limitation: It can either bind just one attribute; or just one innerHTML value injection
-                    $item.querySelectorAll('[data-bind]').forEach($el => {
-                        let dataBindValue = getObjPropByPath(model, $el.dataset.bind);
 
-                        if($el.dataset.bindFn) {
-                            // ⚠ CLOSE YOUR EYES! IT'S EVAL TIME AGAIN 😂
-                            // this will allow as to perform extra processing to the data bind value 😎
-                            dataBindValue = eval($el.dataset.bindFn)(dataBindValue);
-                        }
+                const $item = mountBinds($childTemplate, model);
 
-                        if($el.dataset.bind && !$el.dataset.bindAttr) { // to inject content value
-                            $el.innerHTML = dataBindValue;
-
-                        } else if ($el.dataset.bindAttr && $el.dataset.bind) { // to inject attr value
-                            $el.setAttribute($el.dataset.bindAttr, dataBindValue);
-                        }
-                    })
-                  
-                    // Change this to div.childNodes to support multiple top-level nodes
-                    $parent.appendChild($item); 
+                // Change this to div.childNodes to support multiple top-level nodes
+                $parent.appendChild($item); 
 
                 $parent.classList.add('__computed-content__');
                 return $parent.outerHTML;
@@ -186,6 +194,63 @@ window.$renders = {
                 // There was an error
                 console.warn('Something went wrong.', err);
             });
+
+    },
+
+    renderProductsList: (contentUrl, template) => {
+        console.log('renderProductsList')
+
+        const $parent = template;
+        const $childTemplate = $parent.lastElementChild.cloneNode(true);
+        const $countResultsTemplate = $parent.firstElementChild.cloneNode(true);
+        $parent.innerHTML = '';
+
+        return fetch(contentUrl)
+        // The API call was successful!
+        .then((response) => response.json())
+
+        .then((json) => {
+            console.log('api result')
+            VIEW_MODEL.resultCount = json.length;
+            const $item = mountBinds($countResultsTemplate, {resultCount: json.length});
+            $parent.appendChild($item); 
+
+
+            json.forEach(model => {
+                const $item = mountBinds($childTemplate, model);
+
+                // Change this to div.childNodes to support multiple top-level nodes
+                $parent.appendChild($item); 
+                
+            })
+            
+            $parent.classList.add('__computed-content__');
+
+            return $parent.outerHTML;
+        })
+        .catch((err) => {
+            // There was an error
+            console.warn('Something went wrong.', err);
+        });
+
+    },
+
+    renderProductsResultCounter: (contentUrl, template) => {
+        console.log('renderProductsResultCounter')
+
+        const $parent = template;
+        const $childTemplate = $parent.firstElementChild;
+        $parent.innerHTML = '';
+
+        const $item = mountBinds($childTemplate, VIEW_MODEL);
+
+            // Change this to div.childNodes to support multiple top-level nodes
+        $parent.appendChild($item); 
+
+        
+        $parent.classList.add('__computed-content__');
+
+        return $parent.outerHTML;
 
     }
 };
@@ -218,4 +283,56 @@ if (document.addEventListener) {
     document.addEventListener('click', interceptClickEvent);
 } else if (document.attachEvent) {
     document.attachEvent('onclick', interceptClickEvent);
+}
+
+
+const setMenuActiveLink = () => {
+    const $activeLink = document.querySelector(`#main-menu .main-menu__link[href="${document.body.dataset.page}"]`)
+    $activeLink.classList.toggle('active')
+}
+
+
+
+/************************************** */
+
+const updateRenderContainer = (templatePath, contentUrl) => {
+    return getTemplate(templatePath)
+        .then(async (template) => {
+            /*
+            - calls 'data-render-fn' attr, if the template needs data bindings
+            - fetchs 'data-content-url' to get the data to be bind
+            */
+        let $html = '';
+            for(let i = 0; i < template.childElementCount; i++) {
+                const $container = template.children[i];
+                const fn = window.$renders[$container.dataset.renderFn];
+
+                if (fn && typeof fn === "function") { // dynamic rendering
+                    $html +=  await fn.apply($container, [contentUrl, $container]);    
+                } else { // static rendering
+                    $html += $container.outerHTML;
+                }
+            }
+            return $html;
+
+        })
+}
+
+ const applyFilter = window.doit = (filter) => {
+    const $productsContainer = document.querySelector('.products-list');
+    const productsTemplatePath = '/products-list.tpl.html'
+    const baseContentUrl =  'http://localhost:8008/products-filter?'
+
+    let filterArgs = '';
+    Object.keys(filter).forEach((key) => {
+        filterArgs += `${key}=${filter[key]}&`;
+    })
+
+    const filterUrl = baseContentUrl + filterArgs;
+    console.dir(filterUrl)
+
+    updateRenderContainer(productsTemplatePath, filterUrl)
+        .then((html) => {
+            $productsContainer.innerHTML = html;
+        })
 }

@@ -1,0 +1,68 @@
+
+
+
+    <div class="product-sidebar__filters">
+        <div class="product-sidebar__filter">
+            <h6 class="product-sidebar__filter-title">Categories</h6>
+            <ul class="product-sidebar__filter-options" data-bind-loop="filters.categories">
+                <li>
+                    <label for="filter-cat-tshirt" data-bind-content="label">T-shirts</label>
+                    <input type="radio" id="filter-cat-tshirt" name="tshirt" data-bind-event="change:product-filter"/>
+                </li>
+
+                <!--<li>
+                    <input type="radio" id="filter-cat-hoodie" name="hoodie">
+                    <label for="filter-cat-hoodie">T-Hoodies</label>
+                </li>
+
+                <li>
+                    <input type="radio" id="filter-cat-sweeter" name="sweeter">
+                    <label for="filter-cat-sweeter">Sweeters</label>
+                </li>-->
+            </ul>
+        </div>
+    
+        <div class="product-sidebar__filter">
+            <h6 class="product-sidebar__filter-title">Price</h6>
+            <ul class="product-sidebar__filter-options">
+                    <li><a href="#">1$ - 10$</a></li>
+                    <li><a href="#">10$ - 20$</a></li>
+                    <li><a href="#">> 20$</a></li>
+            </ul>
+        </div>
+        
+        <div class="product-sidebar__filter">
+            <h6 class="product-sidebar__filter-title">Colors</h6>
+            <ul class="product-sidebar__filter-options">
+                    <li><a href="#">white</a></li>
+                    <li><a href="#">red</a></li>
+                    <li><a href="#">black</a></li>
+            </ul>
+        </div>
+        
+        <div class="product-sidebar__filter">
+            <h6 class="product-sidebar__filter-title">Reviews</h6>
+            <ul class="product-sidebar__filter-options">
+                    <li><a href="#">5/5</a></li>
+                    <li><a href="#">4/5</a></li>
+                    <li><a href="#">3/5</a></li>
+            </ul>
+        </div>          
+    </div>
+    
+    <section class="products-list">
+        <div class="products-list__results" >
+            <h1 data-bind-content="products.length">total results: <value></value></h1>
+        </div>
+
+        <div data-bind-loop="products" class="products-list__grid">
+            <article class="products-list__item">
+                <a data-bind-attrs="href:id" data-bind-fn="(val) => `/products/${val}`">
+                    <img data-bind-attrs="src:images[0].path" class="products-list__item-image" src="http://placehold.it/100x100">
+                    <p data-bind-content="price" data-bind-fn="(val) => `${val.toFixed(2)} $`"><value></value></p>
+                    <h2 data-bind-content="name"></h2>
+                    <h2 data-bind-attrs="title:name">check the title</h2>
+                </a>
+            </article>
+        </div>
+    </section>

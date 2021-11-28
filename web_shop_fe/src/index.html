@@ -10,10 +10,10 @@
         <main class="main-content">
             <header class="main-content__sidebar">
                 <a href="/">
-                    <img alt="logo"  />
+                    <img alt="logo" src="/logo.png" />
                 </a>
 
-                <nav class="main-menu">
+                <nav class="main-menu" id="main-menu">
                     <ul class="main-menu__list">
                         <li class="main-menu__item">
                             <a href="/"  class="main-menu__link">Home</a>
@@ -55,33 +55,14 @@
                     <a href="#" title="Twitter"><i class="icon icon__tw gg-twitter"></i></a>
                 </div>
             </header>
-
-            <!--<section class="products-home">
-                <article class="products-home__item">
-                    <a href="#">
-                        <img src="http://placehold.it/200x200">
-                        <p>$60</p>
-                        <h2>A product name</h2>
-                    </a>
-                </article>
-            </section>-->
-            <div class="__dynamic-content__" data-template="/products-home.tpl.html" data-url-pattern="/">     
-                <i class="gg-spinner-two"></i>
-            </div>
-
-            <div class="__dynamic-content__" data-template="/products-list.tpl.html" data-url-pattern="/products">     
-                <i class="gg-spinner-two"></i>
-            </div>
-            
-            <div class="__dynamic-content__" data-template="/product-detail.tpl.html" data-url-pattern="/products/\d+">     
-                <i class="gg-spinner-two"></i>
-            </div>                  
+                     
+            <div id="app"></div>              
         </main>
 
         <footer class="footer-content">
 
         </footer>
 
-        <script type="module" src="/main.js"></script>
+        <script type="module" src="/js/app.js"></script>
     </body>
 </html>
