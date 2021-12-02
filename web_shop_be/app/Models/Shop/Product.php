@@ -32,7 +32,17 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
 	protected $table = 'products';
-	public $incrementing = false;
+	public $incrementing = true;
+
+	static $rules = [
+		'sizes' => 'required',
+		'body' => 'required',
+		'price' => 'required',
+		'name' => 'required',
+    ];
+
+    protected $perPage = 20;
+
 
 	protected $casts = [
 		'id' => 'int',
