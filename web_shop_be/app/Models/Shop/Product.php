@@ -36,8 +36,8 @@ class Product extends Model
 
 	protected $casts = [
 		'id' => 'int',
-		'sizes' => 'set',
-		'body' => 'set',
+		'sizes' => 'string',
+		'body' => 'string',
 		'price' => 'float'
 	];
 

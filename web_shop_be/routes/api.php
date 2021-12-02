@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::apiResource('colors' , Shop\ColorController::class);
+Route::apiResources([
+    'colors' => Shop\ColorController::class,
+    'products' => Shop\ProductController::class,
+]);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
