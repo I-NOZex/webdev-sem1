@@ -45,9 +45,9 @@ const routes = {
             xpto2: 'a xpto2 title',
             filters: {
                 categories : [
-                    { label: '1'},
-                    { label: '2'},
-                    { label: '3'},
+                    { label: '1', active: true},
+                    { label: '2', active: false},
+                    { label: '3', active: false},
                 ],
 
                 price: [
@@ -107,8 +107,19 @@ const App = new VanillaSpaEngine({
 
 const filter = () => {
  App.updateCurrentModel({
-    remoteModel: async() => await fetchRemoteModel('http://localhost:8008/products-filter?price_gte=7', 'products',true)
- })
+    remoteModel: async() => await fetchRemoteModel('http://localhost:8008/products-filter?price_gte=7', 'products',true),
+    staticModel: {
+        filters: {
+            categories : [
+                { label: '1', active: false},
+                { label: '2', active: true},
+                { label: '3', active: false},
+            ],
+       },
+    }
+})
+
+ 
 }
 
 EVENTBUS.on('product-filter', (e) => filter())

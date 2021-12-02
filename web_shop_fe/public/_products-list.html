@@ -5,11 +5,11 @@
         <div class="product-sidebar__filter">
             <h6 class="product-sidebar__filter-title">Categories</h6>
             <ul class="product-sidebar__filter-options" data-bind-loop="filters.categories">
-                <li>
-                    <label for="filter-cat-tshirt" data-bind-content="label">T-shirts</label>
+                <li class="product-sidebar__filter-toggle">
                     <input type="radio" id="filter-cat-tshirt" name="tshirt" data-bind-event="change:product-filter"/>
+                    <label for="filter-cat-tshirt" class="active" data-bind-if="active" data-bind-content="label">t</label>
+                    <label for="filter-cat-tshirt" data-bind-if="!active" data-bind-content="label">t</label>
                 </li>
-
                 <!--<li>
                     <input type="radio" id="filter-cat-hoodie" name="hoodie">
                     <label for="filter-cat-hoodie">T-Hoodies</label>

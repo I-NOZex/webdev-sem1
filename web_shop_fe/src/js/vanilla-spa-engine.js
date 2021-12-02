@@ -9,6 +9,7 @@ class BindValue extends HTMLElement {
     }
 }
   
+const BIND_ATTRIBUTES = '[data-bind-content],[data-bind-attrs],[data-bind-loop],[data-bind-if]';
 
 class Router {
     constructor(_routes, _templateEngine) {
@@ -64,6 +65,7 @@ class Router {
         $newActiveLink.classList.add('active');
 
         this.appContainer.innerHTML = await this.templateEngine.renderTemplate(route);
+        window.sessionStorage.setItem('app-container', this.appContainer.innerHTML);
         this.templateEngine
             .bindData(this.appContainer, this.model)
             .then(() => {
@@ -74,6 +76,7 @@ class Router {
 
     onModelUpdated = async() => {
         //this.appContainer.innerHTML = await this.templateEngine.renderTemplate(this.currentRoute, await this.model);
+        this.appContainer.innerHTML = window.sessionStorage.getItem('app-container')
         this.appContainer.classList.add('loading')
         this.templateEngine
             .bindData(this.appContainer, this.model)
@@ -160,6 +163,28 @@ class TemplateEngine {
             return eval($el.dataset.bindFn)(val);
         }
 
+        if($el.dataset.bindIf) {
+            let dataBindValue;
+            const negate = $el.dataset.bindIf.startsWith('!');
+            if(negate)
+                dataBindValue = this.getObjPropByPath(model, $el.dataset.bindIf.substring(1));
+            else
+                dataBindValue = this.getObjPropByPath(model, $el.dataset.bindIf);
+
+            const shouldRender = dataBindValue && !negate;
+            if(dataBindValue){
+                if(negate) {
+                    $el.remove();
+                    return;                    
+                }
+            } else {
+                if(!negate) {
+                    $el.remove();
+                    return;                    
+                }
+            }
+        }
+
         if($el.dataset.bindContent) {
             let dataBindValue = this.getObjPropByPath(model, $el.dataset.bindContent);
 
@@ -218,7 +243,7 @@ class TemplateEngine {
     };
     
     bindData = async($template, model) => {
-        const $bindingContainers =  $template.querySelectorAll('[data-bind-content],[data-bind-attrs],[data-bind-loop]');
+        const $bindingContainers =  $template.querySelectorAll(BIND_ATTRIBUTES);
         const computedModel = await model;
         $bindingContainers.forEach(($el) => this.mapBind($el, computedModel));    
     }
@@ -254,7 +279,7 @@ export default class VanillaSpaEngine {
 
     updateCurrentModel({remoteModel, staticModel}) {
         remoteModel && (this.router.currentRoute.remoteModel = remoteModel);
-        staticModel && (this.router.currentRoute.staticModel = staticModel);
+        staticModel && (this.router.currentRoute.staticModel = {...this.router.currentRoute.staticModel, ...staticModel});
 
         this.router.onModelUpdated();
     }

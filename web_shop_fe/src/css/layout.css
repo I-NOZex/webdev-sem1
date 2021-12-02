@@ -165,6 +165,29 @@ a {
     font-size: 1.25rem;
 }
 
+.product-sidebar__filter-options {
+    list-style: none;
+    padding-left: 0.75rem;
+}
+
+.product-sidebar__filter-toggle > label {
+    color: var(--gray)
+
+}
+
+.product-sidebar__filter-toggle > input[type="radio"] {
+    display: none;
+}
+
+.product-sidebar__filter-toggle > input[type="radio"]:checked + label {
+    color: var(--primary);
+}
+
+.product-sidebar__filter-toggle > label.active {
+    color: var(--primary);
+}
+
+
 .products-list {
     display: flex;
     padding: 2.5rem;
