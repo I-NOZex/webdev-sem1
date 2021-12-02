@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignKeysToImagesTable extends Migration
+class AddForeignKeysToShopcartsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddForeignKeysToImagesTable extends Migration
      */
     public function up()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->foreign(['product_id'], 'fk_images_product1')->references(['id'])->on('products')->onUpdate('NO ACTION')->onDelete('NO ACTION');
+        Schema::table('shopcarts', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'fk_shopcart_users1')->references(['id'])->on('users')->onUpdate('NO ACTION')->onDelete('NO ACTION');
         });
     }
 
@@ -25,8 +25,8 @@ class AddForeignKeysToImagesTable extends Migration
      */
     public function down()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->dropForeign('fk_images_product1');
+        Schema::table('shopcarts', function (Blueprint $table) {
+            $table->dropForeign('fk_shopcart_users1');
         });
     }
 }
