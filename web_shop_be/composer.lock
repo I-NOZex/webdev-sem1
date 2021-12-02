@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d54d56b6a5d01b880df96149ff5f35bd",
+    "content-hash": "d32279c9fd6b8a51a982961c13dc2b43",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6073,6 +6073,54 @@
                 }
             ],
             "time": "2021-11-04T06:42:15+00:00"
+        },
+        {
+            "name": "laracademy/generators",
+            "version": "3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laracademy/generators.git",
+                "reference": "71e44bf44073ace5deed0b7533cb0beeedc198c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laracademy/generators/zipball/71e44bf44073ace5deed0b7533cb0beeedc198c2",
+                "reference": "71e44bf44073ace5deed0b7533cb0beeedc198c2",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laracademy\\Generators\\GeneratorsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laracademy\\Generators\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael McMullen",
+                    "email": "michael@laracademy.co"
+                }
+            ],
+            "description": "This package will generate a Laravel Model based on your database table itself, filling in the required fields automatically.",
+            "keywords": [
+                "generators",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laracademy/generators/issues",
+                "source": "https://github.com/laracademy/generators/tree/3.2"
+            },
+            "time": "2021-06-23T20:09:59+00:00"
         },
         {
             "name": "laravel/breeze",
