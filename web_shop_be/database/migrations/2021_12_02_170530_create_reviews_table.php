@@ -14,8 +14,8 @@ class CreateReviewsTable extends Migration
     public function up()
     {
         Schema::create('reviews', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
-            $table->bigInteger('product_id')->index('fk_review_product1_idx');
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('product_id')->index('fk_review_product1_idx');
             $table->unsignedBigInteger('user_id')->index('fk_reviews_users1_idx');
             $table->timestamps();
         });

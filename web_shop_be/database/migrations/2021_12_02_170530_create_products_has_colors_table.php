@@ -14,8 +14,8 @@ class CreateProductsHasColorsTable extends Migration
     public function up()
     {
         Schema::create('products_has_colors', function (Blueprint $table) {
-            $table->bigInteger('products_id')->index('fk_products_has_colors_products1_idx');
-            $table->bigInteger('colors_id')->index('fk_products_has_colors_colors1_idx');
+            $table->unsignedBigInteger('products_id')->index('fk_products_has_colors_products1_idx');
+            $table->unsignedBigInteger('colors_id')->index('fk_products_has_colors_colors1_idx');
 
             $table->primary(['products_id', 'colors_id']);
         });

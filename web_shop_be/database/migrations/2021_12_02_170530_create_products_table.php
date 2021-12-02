@@ -14,7 +14,7 @@ class CreateProductsTable extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->set('sizes', ['Teen', 'S', 'M', 'L', 'XL']);
             $table->set('body', ['Male', 'Female']);
             $table->enum('state', ['Available', 'Unavailable', 'Archived'])->nullable()->default('Available');
