@@ -16,10 +16,9 @@
 
             <thead>
               <tr>
-                <th>SN</th>
-                <th>Product</th>
-                <th>Edit</th>
-                <th>Delete</th>
+                <th>#</th>
+                <th with="100%">Product</th>
+                <th colspan="3">Actions</th>
               </tr>
             </thead>
 
@@ -29,7 +28,11 @@
                     <tr>
                       <td>{{$loop->iteration}}</td>
 
-                      <td>{{$product->title}}</td>
+                      <td>{{$product->name}}</td>
+
+                      <td>
+                        <a href="{{route('products.show', $product->id) }}" class="btn btn-primary btn-sm">View</a>
+                    </td>
 
                       <td>
                           <a href="{{route('products.edit', $product->id) }}" class="btn btn-secondary btn-sm">Edit</a>
