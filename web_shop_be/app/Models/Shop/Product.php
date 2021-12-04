@@ -29,8 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Shop
  */
-class Product extends Model
-{
+class Product extends Model {
 	protected $table = 'products';
 	public $incrementing = true;
 
@@ -39,9 +38,9 @@ class Product extends Model
 		'body' => 'required',
 		'price' => 'required',
 		'name' => 'required',
-    ];
+	];
 
-    protected $perPage = 20;
+	protected $perPage = 20;
 
 
 	protected $casts = [
@@ -55,32 +54,59 @@ class Product extends Model
 		'sizes',
 		'body',
 		'state',
-		'price'
+		'price',
+		'name'
 	];
 
-	public function images()
-	{
+	protected $bodyTypes = [
+		'Male' => 'Male',
+		'Female' => 'Female'
+	];
+
+	protected $states = [
+		'Available' => 'Available', 
+		'Unavailable' => 'Unavailable', 
+		'Archived' => 'Archived'
+	];
+
+	protected $sizes = [
+		'Teen' => 'Teen',
+		'S' => 'S',
+		'M' => 'M',
+		'L' => 'L',
+		'XL' => 'XL',
+	];
+
+	public function getBodyTypes() {
+		return $this->bodyTypes;
+	}
+
+	public function getStates() {
+		return $this->states;
+	}
+
+	public function getSizes() {
+		return $this->sizes;
+	}
+
+	public function images() {
 		return $this->hasMany(Image::class);
 	}
 
-	public function products_has_categories()
-	{
+	public function products_has_categories() {
 		return $this->hasMany(ProductsHasCategory::class);
 	}
 
-	public function colors()
-	{
+	public function colors() {
 		return $this->belongsToMany(Color::class, 'products_has_colors', 'products_id', 'colors_id');
 	}
 
-	public function reviews()
-	{
+	public function reviews() {
 		return $this->hasMany(Review::class);
 	}
 
-	public function shopcarts()
-	{
+	public function shopcarts() {
 		return $this->belongsToMany(Shopcart::class, 'shopcart_has_products', 'products_id', 'shopcart_user_id')
-					->withPivot('quantity');
+			->withPivot('quantity');
 	}
 }

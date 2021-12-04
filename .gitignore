@@ -42,3 +42,4 @@ Homestead.json
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+web_shop_be/storage/debugbar/*
