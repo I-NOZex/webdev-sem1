@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Shop\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,9 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ProductController::class, 'index']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -23,4 +23,7 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::resource('products', Admin\ProductController::class);
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::permanentRedirect('/', '/admin/products');
+    Route::resource('products', Admin\ProductController::class);
+});

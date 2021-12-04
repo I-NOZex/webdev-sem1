@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::apiResources([
-    'colors' => Shop\ColorController::class,
-    'products' => Shop\ProductController::class,
+    'colors' => Api\ColorController::class,
+    'products' => Api\ProductController::class,
 ]);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
