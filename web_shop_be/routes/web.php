@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Shop\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +14,11 @@ use App\Http\Controllers\Shop\ProductController;
 |
 */
 
-Route::get('/', [ProductController::class, 'index']);
+Route::get('/', [App\Http\Controllers\Shop\ProductController::class, 'index']);
+
+Route::prefix('/')->group(function () {
+    Route::resource('products', Shop\ProductController::class);
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

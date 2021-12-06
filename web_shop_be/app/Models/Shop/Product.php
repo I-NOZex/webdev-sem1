@@ -29,7 +29,11 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Shop
  */
+
+use Kyslik\ColumnSortable\Sortable;
 class Product extends Model {
+	use Sortable;
+
 	protected $table = 'products';
 	public $incrementing = true;
 
@@ -40,8 +44,8 @@ class Product extends Model {
 		'name' => 'required',
 	];
 
-	protected $perPage = 20;
-
+	//protected $perPage = 20;
+	public $sortable = ['price'];
 
 	protected $casts = [
 		'id' => 'int',
