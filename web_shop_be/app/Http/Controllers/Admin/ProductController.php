@@ -2,8 +2,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Shop\Product;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Shop\Category;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
@@ -45,7 +46,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('product.edit', compact('product'));
+        return view('product.edit', [
+            'product' => $product,
+            'categories' => Category::all()
+        ]);
     }
 
     public function update(Request $request, Product $product)
@@ -56,7 +60,14 @@ class ProductController extends Controller
         $data['body'] = implode(",", $data['body']);
         $data['sizes'] = implode(",", $data['sizes']);
 
+        
         $product->update($data);
+
+        if(!empty($request->categories )) {
+            foreach ($request->categories as $categoryId) {
+                $product->categories()->syncWithoutDetaching($categoryId);
+            }
+        }
 
         return redirect()->route('products.index')->with('success', 'Product Created Successfully!');
     }

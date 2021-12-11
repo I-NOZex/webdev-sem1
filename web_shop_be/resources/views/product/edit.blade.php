@@ -68,6 +68,25 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        {{ Form::label('categories', 'Categories', ['class' => 'col-4 col-form-label']) }}
+                        <div class="col-8">
+                            <select id="categories" name="categories[]" class="form-control" multiple="multiple" autocomplete="off">
+                                @php
+                                    $modelValues = explode(',', $product->body);
+                                @endphp
+
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ in_array($category->id, $product->categories->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         {{ Form::label('price', 'Price', ['class' => 'col-4 col-form-label']) }}
                         <div class="col-8">

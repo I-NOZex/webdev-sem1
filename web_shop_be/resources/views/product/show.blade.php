@@ -2,8 +2,6 @@
 
 @section('content')
 
-@endsection
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3 py-5 px-3 col-lg-2 sidebar-filter bg-light border-right">
@@ -11,10 +9,10 @@
                 <img src="/logo.png" class="mx-auto d-block img-responsive">
             </div>
         </div>
-        <div class="col-md-9 col-lg-10 border p-3 main-section bg-white">
-            <div class="row m-0">
-                <div class="col-lg-4 pb-3">
-                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <div class="col-md-9 col-lg-10 border p-3 d-flex align-items-center">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
                             <div class="carousel-item active"> <img src="http://nicesnippets.com/demo/pd-image2.jpg"
                                     class="rounded"> </div>
@@ -25,13 +23,13 @@
                         </div>
                         <ol class="carousel-indicators list-inline">
                             <li class="list-inline-item active"> <a id="carousel-selector-0" class="selected"
-                                    data-slide-to="0" data-target="#myCarousel"> <img src="http://nicesnippets.com/demo/pd-image2.jpg"
+                                    data-slide-to="0" data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image2.jpg"
                                         class="img-fluid rounded"> </a> </li>
                             <li class="list-inline-item"> <a id="carousel-selector-1" data-slide-to="1"
-                                    data-target="#myCarousel"> <img src="http://nicesnippets.com/demo/pd-image3.jpg"
+                                    data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image3.jpg"
                                         class="img-fluid rounded"> </a> </li>
                             <li class="list-inline-item"> <a id="carousel-selector-2" data-slide-to="2"
-                                    data-target="#myCarousel"> <img src="http://nicesnippets.com/demo/pd-image4.jpg"
+                                    data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image4.jpg"
                                         class="img-fluid rounded"> </a> </li>
                         </ol>
                     </div>
@@ -40,11 +38,15 @@
                     <div class="border p-3 m-0">
                         <div class="row">
                             <div class="col-lg-12">
-                                <h1 class="h3">--category--</h1>
+                                <h1 class="h3">
+                                @foreach ($product->categories as $category)
+                                    {{$category->name}}{{ !$loop->last ? ', ' : '' }}
+                                @endforeach
+                                </h1>
                                 <h2 class="m-0 p-0 h1">{{ $product->name }}</h2>
                             </div>
                             <div class="col-lg-12">
-                                <p class="m-0 p-0 price-pro">{{ $product->price }}</p>
+                                <p class="font-weight-bold">{{ $product->price }} kr.</p>
                                 <hr class="p-0 m-0">
                             </div>
                             <div class="col-lg-12 pt-2">
@@ -61,7 +63,7 @@
                                         $bodyTypes = explode(',', $product->body);
                                     @endphp
                                     @foreach ($bodyTypes as $type)
-                                        <a href="/products?body={{ $type }}">{{ $type }}</a> {{ !$loop->last ? ', ' : '' }}
+                                        <a href="/products?body_has[]={{ $type }}">{{ $type }}</a> {{ !$loop->last ? ', ' : '' }}
                                     @endforeach
                                 </p>
                                 <p class="options-section">
@@ -70,7 +72,7 @@
                                         $sizes = explode(',', $product->sizes);
                                     @endphp
                                     @foreach ($sizes as $size)
-                                        <a href="/products?size={{ $size }}">{{ $size }}</a> {{ !$loop->last ? ', ' : '' }}
+                                        <a href="/products?sizes_has[]={{ $size }}">{{ $size }}</a> {{ !$loop->last ? ', ' : '' }}
                                     @endforeach                                
                                 </p>
                                 <hr class="m-0 pt-2 mt-2">
@@ -93,33 +95,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-12 text-center pt-3">
-                    <h4>More Product</h4>
-                </div>
-            </div>
-            <div class="row mt-3 p-0 text-center pro-box-section">
-                <div class="col-lg-3 pb-2">
-                    <div class="pro-box border p-0 m-0">
-                        <img src="http://nicesnippets.com/demo/pd-b-image1.jpg">
-                    </div>
-                </div>
-                <div class="col-lg-3 pb-2">
-                    <div class="pro-box border p-0 m-0">
-                        <img src="http://nicesnippets.com/demo/pd-b-images2.jpg">
-                    </div>
-                </div>
-                <div class="col-lg-3 pb-2">
-                    <div class="pro-box border p-0 m-0">
-                        <img src="http://nicesnippets.com/demo/pd-b-images3.jpg">
-                    </div>
-                </div>
-                <div class="col-lg-3 pb-2">
-                    <div class="pro-box border p-0 m-0">
-                        <img src="http://nicesnippets.com/demo/pd-b-images4.jpg">
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+@endsection

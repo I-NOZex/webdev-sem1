@@ -27,6 +27,7 @@ Route::get('/dashboard', function () {
 require __DIR__.'/auth.php';
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::permanentRedirect('/', '/admin/products');
+    Route::permanentRedirect('/', '/dashboard');
     Route::resource('products', Admin\ProductController::class);
+    Route::resource('categories', Admin\CategoryController::class);
 });

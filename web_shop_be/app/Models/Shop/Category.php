@@ -33,8 +33,8 @@ class Category extends Model
 		'name'
 	];
 
-	public function products_has_categories()
+	public function products()
 	{
-		return $this->hasMany(ProductsHasCategory::class);
+		return $this->belongsToMany(Product::class, 'products_has_categories');
 	}
 }

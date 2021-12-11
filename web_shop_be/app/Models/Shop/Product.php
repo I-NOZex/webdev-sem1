@@ -97,8 +97,8 @@ class Product extends Model {
 		return $this->hasMany(Image::class);
 	}
 
-	public function products_has_categories() {
-		return $this->hasMany(ProductsHasCategory::class);
+	public function categories() {
+		return $this->belongsToMany(Category::class, 'products_has_categories');
 	}
 
 	public function colors() {
