@@ -23,7 +23,7 @@ class ProductController extends Controller
             'has' => 'has'
         ];
 
-        $products = Product::sortable();
+        $products = Product::sortable()->where('state', '=', 'Available');
 
         $categories = Category::all();
 
@@ -117,7 +117,9 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        return view('product.show', compact('product'));
+        if($product->state === 'Available')
+            return view('product.show', compact('product'));
+            else return abort(404);
     }
 
     /*public function edit(Product $product)
