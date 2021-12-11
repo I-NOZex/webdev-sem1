@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Shop\Image;
 use App\Models\Shop\Product;
 use Illuminate\Http\Request;
 use App\Models\Shop\Category;
@@ -11,7 +12,7 @@ class ProductController extends Controller
     public function index()
     {
         return view('product.index', [
-            'products' => Product::latest()->get()
+            'products' => Product::latest()->get(),
         ]);
     }
 
@@ -19,6 +20,7 @@ class ProductController extends Controller
      {
          $model = new Product();
         return view('product.create', [
+            'categories' => Category::all(),
             'enum' => [
                 'sizes' => $model->getSizes(),
                 'body' => $model->getBodyTypes(),
@@ -29,12 +31,24 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        //$request->validate([]);
+        $request->validate(Product::$rules);
+
         $data = $request->all();
         $data['body'] = implode(",", $data['body']);
         $data['sizes'] = implode(",", $data['sizes']);
 
-        Product::create($data);
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+        
+        $new_product = Product::create($data);
+        $this->imageUpload($request, $new_product->id);
+
+        if(!empty($request->categories )) {
+            foreach ($request->categories as $categoryId) {
+                $new_product->categories()->syncWithoutDetaching($categoryId);
+            }
+        }
 
         return redirect()->route('products.index')->with('success', 'Product Created Successfully!');
     }
@@ -63,6 +77,8 @@ class ProductController extends Controller
         
         $product->update($data);
 
+        $this->imageUpload($request, $product->id);
+
         if(!empty($request->categories )) {
             foreach ($request->categories as $categoryId) {
                 $product->categories()->syncWithoutDetaching($categoryId);
@@ -70,6 +86,28 @@ class ProductController extends Controller
         }
 
         return redirect()->route('products.index')->with('success', 'Product Created Successfully!');
+    }
+
+    public function imageUpload(Request $req, $product_id){
+        $req->validate([
+        'file' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $imageModel = new Image;
+
+        if($req->file()) {
+            $fileName = time().'_'.$req->file->getClientOriginalName();
+            $filePath = $req->file('file')->storeAs('uploads', $fileName, 'public');
+
+            $imageModel->name = time().'_'.$req->file->getClientOriginalName();
+            $imageModel->file_path = '/storage/' . $filePath;
+            $imageModel->product_id = $product_id;
+            $imageModel->save();
+
+            return back()
+            ->with('success','File has been uploaded.')
+            ->with('file', $fileName);
+        }
     }
 
     public function destroy(Product $product)

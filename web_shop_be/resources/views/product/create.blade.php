@@ -63,6 +63,20 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        {{ Form::label('categories', 'Categories', ['class' => 'col-4 col-form-label']) }}
+                        <div class="col-8">
+                            <select id="categories" name="categories[]" class="form-control" multiple="multiple" autocomplete="off">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         {{ Form::label('price', 'Price', ['class' => 'col-4 col-form-label']) }}
                         <div class="col-8">
@@ -75,6 +89,13 @@
                             {{ Form::select('state', $enum['states'], null, ['class' => 'form-control', 'autocomplete' => 'off']) }}
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label for="imageFile" class="col-4 col-form-label">Images</label>
+                        <div class="col-8">
+                            <input type="file" multiple name="file" class="form-control-file" id="imageFile">
+                        </div>
+                    </div>
+
 
                     <input type="submit" name="submit" value="create" class="btn btn-primary">
                 </form>

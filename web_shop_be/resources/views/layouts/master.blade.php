@@ -26,7 +26,42 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
+<style>
+body {
+    background-color: #eee
+}
 
+.carousel-inner img {
+    width: 100%
+}
+
+.carousel-item img {
+    width: 320px;
+    height: 240px !important
+}
+
+#productCarousel .carousel-indicators {
+    position: static;
+    margin-top: 0px
+}
+
+#productCarousel .carousel-indicators>li {
+    width: 100px
+}
+
+#productCarousel .carousel-indicators li img {
+    display: block;
+    opacity: 0.5
+}
+
+#productCarousel .carousel-indicators li.active img {
+    opacity: 1
+}
+
+#productCarousel .carousel-indicators li:hover img {
+    opacity: 0.75
+}    
+</style>
 </head>
 
 <body>

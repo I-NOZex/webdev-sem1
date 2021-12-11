@@ -62,18 +62,18 @@ class Product extends Model {
 		'name'
 	];
 
-	protected $bodyTypes = [
+	const bodyTypes = [
 		'Male' => 'Male',
 		'Female' => 'Female'
 	];
 
-	protected $states = [
+	const states = [
 		'Available' => 'Available', 
 		'Unavailable' => 'Unavailable', 
 		'Archived' => 'Archived'
 	];
 
-	protected $sizes = [
+	const sizes = [
 		'Teen' => 'Teen',
 		'S' => 'S',
 		'M' => 'M',
@@ -81,16 +81,16 @@ class Product extends Model {
 		'XL' => 'XL',
 	];
 
-	public function getBodyTypes() {
-		return $this->bodyTypes;
+	public static function getBodyTypes() {
+		return self::bodyTypes;
 	}
 
-	public function getStates() {
-		return $this->states;
+	public static function getStates() {
+		return self::states;
 	}
 
-	public function getSizes() {
-		return $this->sizes;
+	public static function getSizes() {
+		return self::sizes;
 	}
 
 	public function images() {

@@ -100,7 +100,12 @@
                         </div>
                     </div>
                     {{--  --}}
-
+                    <div class="form-group row">
+                        <label for="imageFile" class="col-4 col-form-label">Images</label>
+                        <div class="col-8">
+                            <input type="file" multiple name="file" class="form-control-file" id="imageFile">
+                        </div>
+                    </div>
 
 
 

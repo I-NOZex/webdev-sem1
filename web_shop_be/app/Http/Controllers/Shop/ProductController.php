@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Shop;
 
+use App\Models\Shop\Image;
 use App\Models\Shop\Product;
 use Illuminate\Http\Request;
+use App\Models\Shop\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,6 +25,9 @@ class ProductController extends Controller
 
         $products = Product::sortable();
 
+        $categories = Category::all();
+
+
         $queryStrings = $request->all();
 
         foreach ($queryStrings as $field => $values) {
@@ -34,14 +39,18 @@ class ProductController extends Controller
 
             if( !empty($match) ) {
                 if( Schema::hasColumn('products', $match['field']) ) {
-                    foreach($values as $val) {
-                        if(empty($val)) continue;
-
-                        if($match['operator'] === 'has') {
-                            $products->whereRaw("FIND_IN_SET('{$val}',{$match['field']})");
-                        } else {
-                            $products->where($match['field'], $operationsMap[$match['operator']], $val);
-                        }
+                    if(is_array($values)) {
+                        $products->where(function ($q) use ($values, $match, $operationsMap) {
+                            foreach($values as $val) {
+                                if(empty($val)) continue;
+    
+                                if($match['operator'] === 'has') {
+                                    $q->orWhereRaw("FIND_IN_SET('{$val}',{$match['field']})");
+                                } else {
+                                    $q->orWhere($match['field'], $operationsMap[$match['operator']], $val);
+                                }
+                            }
+                        });
                     }
                 }
 
@@ -50,7 +59,15 @@ class ProductController extends Controller
                     $products->whereIn($field, array_values($values));
                 else
                     $products->where($field, $values);
-
+            } else if ( $field === 'categories' ) {
+                if(is_array($values))
+                    $products->whereHas($field, fn ($query) => 
+                        $query->whereIn('id', array_values($values))
+                    );
+                else
+                    $products->whereHas($field, fn ($query) => 
+                        $query->where('id', $values)
+                    );
             }
         }
 
@@ -68,9 +85,11 @@ class ProductController extends Controller
         }
 
         return view('product.list', [
-            'products' => $products->paginate(4)
+            'products' => $products->paginate(4),
+            'categories' => $categories,
+            'enums' => Product::class,
         ]);
-    }
+    }  
 /* 
      public function create()
      {

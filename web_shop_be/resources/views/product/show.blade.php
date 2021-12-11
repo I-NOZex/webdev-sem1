@@ -6,32 +6,26 @@
     <div class="row">
         <div class="col-md-3 py-5 px-3 col-lg-2 sidebar-filter bg-light border-right">
             <div class="mb-8">
-                <img src="/logo.png" class="mx-auto d-block img-responsive">
+                <a href="{{ url('/') }}"><img src="/logo.png" class="mx-auto d-block img-responsive"></a>
             </div>
         </div>
         <div class="col-md-9 col-lg-10 border p-3 d-flex align-items-center">
             <div class="row">
                 <div class="col-lg-4">
-                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                    <div id="productCarousel" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item active"> <img src="http://nicesnippets.com/demo/pd-image2.jpg"
+                            @foreach($product->images as $image)
+                            <div class="carousel-item {{$loop->first ? 'active' : ''}}"> <img src="{{ $image->file_path }}"
                                     class="rounded"> </div>
-                            <div class="carousel-item"> <img src="http://nicesnippets.com/demo/pd-image3.jpg"
-                                    class="rounded"> </div>
-                            <div class="carousel-item"> <img src="http://nicesnippets.com/demo/pd-image4.jpg"
-                                    class="rounded"> </div>
+                            @endforeach
                         </div>
                         <ol class="carousel-indicators list-inline">
-                            <li class="list-inline-item active"> <a id="carousel-selector-0" class="selected"
-                                    data-slide-to="0" data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image2.jpg"
+                            @foreach($product->images as $image)
+                            <li class="list-inline-item {{$loop->first ? 'active' : ''}}"> <a id="carousel-selector-{{ $loop->index }}" class="{{$loop->first ? 'selected' : ''}}"
+                                    data-slide-to="{{ $loop->index }}" data-target="#productCarousel"> <img src="{{ $image->file_path }}"
                                         class="img-fluid rounded"> </a> </li>
-                            <li class="list-inline-item"> <a id="carousel-selector-1" data-slide-to="1"
-                                    data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image3.jpg"
-                                        class="img-fluid rounded"> </a> </li>
-                            <li class="list-inline-item"> <a id="carousel-selector-2" data-slide-to="2"
-                                    data-target="#product-carousel"> <img src="http://nicesnippets.com/demo/pd-image4.jpg"
-                                        class="img-fluid rounded"> </a> </li>
-                        </ol>
+                            @endforeach
+                        </ol>                 
                     </div>
                 </div>
                 <div class="col-lg-8">

@@ -5,57 +5,29 @@
     <div class="row">
         <div class="col-md-3 py-5 px-3 col-lg-2 sidebar-filter bg-light border-right">
             <div class="mb-8">
-                <img src="./logo.png" class="mx-auto d-block img-responsive">
+                <a href="{{ url('/') }}"><img src="/logo.png" class="mx-auto d-block img-responsive"></a>
             </div>
             <h3 class="mt-0 mb-4 mt-4">Showing <span class="text-primary">{{ $products->count() }}</span> Products</h3>
             <form action="{{ url('/products') }}" method="GET">
                 <h6 class="text-uppercase font-weight-bold mb-3">Categories</h6>
+                @foreach ($categories as $category)
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-1">
-                        <label class="custom-control-label" for="category-1">Accessories</label>
+                        <input type="checkbox" class="custom-control-input" name="categories[]" value="{{ $category->id }}" id="category-{{ $category->id }}" {{!empty(request()->get('categories')) && in_array($category->id.'', request()->get('categories')) ? 'checked' : ''}} >
+                        <label class="custom-control-label" for="category-{{ $category->id }}">{{ $category->name }}</label>
                     </div>
                 </div>
-                <div class="mt-2 mb-2 pl-2">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-2">
-                        <label class="custom-control-label" for="category-2">Coats &amp; Jackets</label>
-                    </div>
-                </div>
-                <div class="mt-2 mb-2 pl-2">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-3">
-                        <label class="custom-control-label" for="category-3">Hoodies &amp; Sweatshirts</label>
-                    </div>
-                </div>
-                <div class="mt-2 mb-2 pl-2">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-4">
-                        <label class="custom-control-label" for="category-4">Jeans</label>
-                    </div>
-                </div>
-                <div class="mt-2 mb-2 pl-2">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-5">
-                        <label class="custom-control-label" for="category-5">Shirts</label>
-                    </div>
-                </div>
-                <div class="mt-2 mb-2 pl-2">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="category-6">
-                        <label class="custom-control-label" for="category-6">Underwear</label>
-                    </div>
-                </div>
+                @endforeach
 
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
                 <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Body</h6>
                 @php
-                    $bodyTypes = optional($products->first())->getBodyTypes() ?? [];
+                    $bodyTypes = $enums::getBodyTypes();
                 @endphp
                 @foreach($bodyTypes as $type)
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" {{request()->get('body_has') === [$type] ? 'checked' : ''}} id="filter-type-{{ $type }}" value="{{ $type }}" name="body_has[]">
+                        <input type="checkbox" class="custom-control-input" {{!empty(request()->get('body_has')) && in_array($type, request()->get('body_has')) ? 'checked' : ''}} id="filter-type-{{ $type }}" value="{{ $type }}" name="body_has[]">
                         <label class="custom-control-label" for="filter-type-{{ $type }}">{{ $type }}</label>
                     </div>
                 </div>
@@ -64,12 +36,12 @@
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
                 <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Size</h6>
                 @php
-                    $sizes = optional($products->first())->getSizes() ?? [];
+                    $sizes = $enums::getSizes();
                 @endphp
                 @foreach($sizes as $size)
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" {{request()->get('sizes_has') === [$size] ? 'checked' : ''}} id="filter-size-{{ $size }}" value="{{ $size }}" name="sizes_has[]">
+                        <input type="checkbox" class="custom-control-input" {{!empty(request()->get('sizes_has')) && in_array($size, request()->get('sizes_has')) ? 'checked' : ''}} id="filter-size-{{ $size }}" value="{{ $size }}" name="sizes_has[]">
                         <label class="custom-control-label" for="filter-size-{{ $size }}">{{ $size }}</label>
                     </div>
                 </div>
@@ -82,8 +54,8 @@
                         $minPrice = request()->get('price_gte');
                         $maxPrice = request()->get('price_lte');
                     @endphp
-                    <input type="number" class="form-control w-50 pull-left mb-2" id="price-min-control" name="price_gte[]" value="{{ !empty($minPrice) ? head($minPrice) : '' }}">
-                    <input type="number" class="form-control w-50 pull-right" id="price-max-control" name="price_lte[]" value="{{ !empty($maxPrice) ? head($maxPrice) : '' }}">
+                    <input type="number" class="form-control w-50 pull-left mb-2" id="price-min-control" name="price_gte[]" value="{{ !empty($minPrice) ? head($minPrice) : App\Models\Shop\Product::min('price') }}">
+                    <input type="number" class="form-control w-50 pull-right" id="price-max-control" name="price_lte[]" value="{{ !empty($maxPrice) ? head($maxPrice) : App\Models\Shop\Product::max('price') }}">
                 </div>
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
                 <button type="submit" class="btn btn-lg btn-block btn-primary mt-5">Update Results</button>
@@ -99,7 +71,7 @@
                                 aria-haspopup="true" aria-expanded="false">Relevance <span
                                     class="caret"></span></a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown" x-placement="bottom-start"
-                                style="position: absolute; transform: translate3d(71px, 48px, 0px); top: 0px; left: 0px; will-change: transform;">
+                            >
                                 <a class="dropdown-item" href="products?sort=price&direction=desc">Price Descending</a>
                                 <a class="dropdown-item" href="products?sort=price&direction=asc">Price Ascending</a>
                             </div>
@@ -118,7 +90,7 @@
                         <div class="card h-100 border-0">
                             <div class="card-img-top">
                                 <a href="{{ url('/products/'.$product->id.'') }}" class="font-weight-bold text-dark text-uppercase small">
-                                <img src="https://via.placeholder.com/240x240/5fa9f8/efefef"
+                                <img src="{{ $product->images->first() ? $product->images->first()->file_path : 'https://via.placeholder.com/200?text=No%20image' }}"
                                     class="img-fluid mx-auto d-block" alt="Card image cap" />
                                 </a>
                             </div>
