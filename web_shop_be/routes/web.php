@@ -30,4 +30,5 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::permanentRedirect('/', '/dashboard');
     Route::resource('products', Admin\ProductController::class);
     Route::resource('categories', Admin\CategoryController::class);
+    Route::resource('images', Admin\ImageController::class);
 });

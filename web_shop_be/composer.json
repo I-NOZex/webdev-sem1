@@ -25,6 +25,7 @@
         "mockery/mockery": "^1.4.4",
         "niraj/crudstarter": "^4.0",
         "nunomaduro/collision": "^5.10",
+        "orangehill/iseed": "^3.0",
         "phpunit/phpunit": "^9.5.10",
         "reliese/laravel": "^1.1"
     },
