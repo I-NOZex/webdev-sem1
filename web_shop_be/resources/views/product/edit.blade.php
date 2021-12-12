@@ -72,7 +72,8 @@
                     <div class="form-group row">
                         {{ Form::label('categories', 'Categories', ['class' => 'col-4 col-form-label']) }}
                         <div class="col-8">
-                            <select id="categories" name="categories[]" class="form-control" multiple="multiple" autocomplete="off">
+                            <select id="categories" name="categories[]" class="form-control" multiple="multiple"
+                                autocomplete="off">
                                 @php
                                     $modelValues = explode(',', $product->body);
                                 @endphp
@@ -104,6 +105,26 @@
                         <label for="imageFile" class="col-4 col-form-label">Images</label>
                         <div class="col-8">
                             <input type="file" multiple name="file" class="form-control-file" id="imageFile">
+
+                            <div class="row mt-3">
+                                @foreach ($product->images as $img)
+                                <div class="col-3" data-card-image="{{ $img->id }}">
+                                    <div class="card text-center">
+                                        <img class="card-img-top" src="{{ $img->file_path }}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ $img->name }}</h5>
+                                                <a href="{{ route('images.destroy', $img->id) }}" 
+                                                    class="btn btn-sm btn-danger delete-image" 
+                                                    data-image-id="{{ $img->id }}" 
+                                                    data-csrf-token="{{ csrf_token() }}"
+                                                    title="Delete">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach                            
+                            </div>                           
                         </div>
                     </div>
 
@@ -114,4 +135,40 @@
             </div>
         </div>
     </div>
+
+<script type="text/javascript">
+//$ = jQuery;
+
+$(document).ready(function () {
+
+$(".delete-image").click(function(e) {
+
+   if(!confirm("Are you sure you want to delete this item?")) {
+      return false;
+    }
+
+   e.preventDefault();
+   const id = $(this).data("imageId");
+   const token = $(this).data("csrfToken");
+   const url = e.target.href;
+
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': token,
+        },
+    }).then(() => {
+        $(`[data-card-image="${id}"`).remove();
+    }).catch(err => {
+        console.error(err);
+        alert('Could not delete image.')
+    });
+
+     return false;
+  });
+   
+
+});
+</script>
+
 @endsection
