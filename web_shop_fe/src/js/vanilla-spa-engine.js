@@ -53,7 +53,13 @@ class Router {
         if(!route) return;
     
         const urlPattern = route.path + '$';
-        let [relativePath, id] = path.match(new RegExp(urlPattern, 'i'));
+        const matches = path.match(new RegExp(urlPattern, 'i'));
+        if (!matches) {
+            console.error('route not found')
+            return;
+        }
+        let [relativePath, id] = matches;
+
 
         window.history.pushState({id, relativePath}, path, window.location.origin + '/#' + path);
         this.currentRoute = route;
@@ -188,7 +194,6 @@ class TemplateEngine {
         if($el.dataset.bindContent) {
             let dataBindValue = this.getObjPropByPath(model, $el.dataset.bindContent);
 
-
             if($el.childElementCount < 1) {
                 $el.innerHTML = computeValue(dataBindValue) + $el.innerHTML;
             } else {
@@ -223,6 +228,9 @@ class TemplateEngine {
     
         if($el.dataset.bindLoop) {
             let dataBindValues = this.getObjPropByPath(model, $el.dataset.bindLoop);
+            if(!dataBindValues) {
+                console.error(`Property "${$el.dataset.bindLoop}" not found in model [${Object.keys(model)}]`)
+            }
 
             $el.innerHTML = $el.firstElementChild.outerHTML; //to reset the template for model updates
 
@@ -237,15 +245,14 @@ class TemplateEngine {
                 })                
             })
             $el.firstElementChild.remove();
-
-    
         }
     };
     
     bindData = async($template, model) => {
         const $bindingContainers =  $template.querySelectorAll(BIND_ATTRIBUTES);
-        const computedModel = await model;
-        $bindingContainers.forEach(($el) => this.mapBind($el, computedModel));    
+        await model.then((computedModel) => {
+            $bindingContainers.forEach(($el) => this.mapBind($el, computedModel));
+        })
     }
 
     bindEvents = ($dom) => {
