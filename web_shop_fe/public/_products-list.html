@@ -6,16 +6,21 @@
             <h6 class="product-sidebar__filter-title">Categories</h6>
             <ul class="product-sidebar__filter-options" data-bind-loop="filters.categories">
                 <li class="product-sidebar__filter-toggle">
-                    <input type="radio" id="filter-cat-tshirt" name="tshirt" data-bind-event="change:product-filter"/>
-                    <label for="filter-cat-tshirt" class="active" data-bind-if="active" data-bind-content="label">t</label>
-                    <label for="filter-cat-tshirt" data-bind-if="!active" data-bind-content="label">t</label>
+                    <input type="radio" id="filter-cat-tshirt" data-bind-attrs="data-bind-event-args:filterArg,id:id" data-bind-event="change:product-filter"/>
+                    <label data-bind-attrs="for:id" class="active" data-bind-if="active" data-bind-content="label"></label>
+                    <label data-bind-attrs="for:id" data-bind-if="!active" data-bind-content="label"></label>
                 </li>
                 <!--<li>
-                    <input type="radio" id="filter-cat-hoodie" name="hoodie">
-                    <label for="filter-cat-hoodie">T-Hoodies</label>
+                    <input type="radio" id="filter-cat-hoodie" name="hoodie" data-bind-event="change:product-filter(price_gte=11)"/>
+                    <label for="filter-cat-hoodie" class="active" data-bind-if="active" data-bind-content="label"></label>
+                    <label for="filter-cat-hoodie" data-bind-if="!active" data-bind-content="label"></label>
                 </li>
 
                 <li>
+                    <input type="radio" id="filter-cat-tshirt" name="tshirt" data-bind-event="change:product-filter(price_gte=7)"/>
+                    <label for="filter-cat-tshirt" class="active" data-bind-if="active" data-bind-content="label"></label>
+                    <label for="filter-cat-tshirt" data-bind-if="!active" data-bind-content="label"></label>
+
                     <input type="radio" id="filter-cat-sweeter" name="sweeter">
                     <label for="filter-cat-sweeter">Sweeters</label>
                 </li>-->
