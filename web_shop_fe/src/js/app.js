@@ -45,9 +45,9 @@ const routes = {
             xpto2: 'a xpto2 title',
             filters: {
                 categories : [
-                    { label: '1', active: true},
-                    { label: '2', active: false},
-                    { label: '3', active: false},
+                    { id: 'filter-cat-shirt', label: 'T-shirts', active: true, filterArg: 'price_gte=1'},
+                    { id: 'filter-cat-hoodie', label: 'Hoodies', active: false, filterArg: 'price_gte=10'},
+                    { id: 'filter-cat-sweat', label: 'Sweaters', active: false, filterArg: 'price_gte=15'},
                 ],
 
                 price: [
@@ -105,15 +105,16 @@ const App = new VanillaSpaEngine({
 });
 
 
-const filter = () => {
+const filter = (e) => {
+//console.log(e)
  App.updateCurrentModel({
-    remoteModel: async() => await fetchRemoteModel('http://localhost:8008/products-filter?price_gte=7', 'products',true),
+    remoteModel: async() => await fetchRemoteModel(`http://localhost:8008/products-filter?${e.detail.args}`, 'products',true),
     staticModel: {
         filters: {
-            categories : [
-                { label: '1', active: false},
-                { label: '2', active: true},
-                { label: '3', active: false},
+            categories: [
+                { id: 'filter-cat-shirt', label: 'T-shirts', active: (e.detail.args === 'price_gte=1'), filterArg: 'price_gte=1'},
+                { id: 'filter-cat-hoodie', label: 'Hoodies', active: (e.detail.args === 'price_gte=10'), filterArg: 'price_gte=10'},
+                { id: 'filter-cat-sweat', label: 'Sweaters', active: (e.detail.args === 'price_gte=15'),  filterArg: 'price_gte=15'},
             ],
        },
     }
@@ -122,4 +123,4 @@ const filter = () => {
  
 }
 
-EVENTBUS.on('product-filter', (e) => filter())
+EVENTBUS.on('product-filter', (e) => filter(e))

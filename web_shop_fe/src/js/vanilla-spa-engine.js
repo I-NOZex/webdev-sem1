@@ -253,9 +253,16 @@ class TemplateEngine {
 
         $bindingContainers.forEach($el => {
             if($el.dataset.bindEvent) {
-                let [trigger, eventName] = $el.dataset.bindEvent.split(':');
-    
-                $el.addEventListener(trigger, () => window.EVENTBUS.emit(eventName));
+                const pattern = /(?<trigger>\w+):(?<eventName>[\w-]+)\(?(?<args>[^(|)]+)?\)?/;
+                const eventDetail = pattern.exec($el.dataset.bindEvent);
+
+                if(eventDetail && eventDetail.groups.trigger && eventDetail.groups.eventName) {
+                    let eventArgs = eventDetail.groups.args ?? $el.dataset?.bindEventArgs;
+                    const event = (e) => {
+                        window.EVENTBUS.emit(eventDetail.groups.eventName, {args: eventArgs})
+                    }
+                    $el.addEventListener(eventDetail.groups.trigger, event);
+                }
             
                 //delete $el.dataset.bindEvent;
             }        
