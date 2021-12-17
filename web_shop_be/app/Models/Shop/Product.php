@@ -37,6 +37,8 @@ class Product extends Model {
 	protected $table = 'products';
 	public $incrementing = true;
 
+    protected $appends = ['photo'];
+
 	static $rules = [
 		'sizes' => 'required',
 		'body' => 'required',
@@ -96,6 +98,10 @@ class Product extends Model {
 	public function images() {
 		return $this->hasMany(Image::class);
 	}
+
+    public function getPhotoAttribute() {
+        return asset($this->images->first()->file_path);
+    }
 
 	public function categories() {
 		return $this->belongsToMany(Category::class, 'products_has_categories');

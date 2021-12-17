@@ -196,6 +196,18 @@ a {
     color: var(--primary);
 }
 
+.product-sidebar__filter-toggle {
+    margin-bottom: 0.5rem;
+}
+
+.product-sidebar__filter-toggle.inline {
+    display: inline-flex;
+}
+
+.product-sidebar__filter-toggle.inline > label {
+   width: 2rem;
+}
+
 
 .products-list {
     display: flex;
