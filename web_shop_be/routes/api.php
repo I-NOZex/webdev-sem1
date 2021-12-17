@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::apiResources([
-    'colors' => Api\ColorController::class,
+    'categories' => Api\CategoryController::class,
     'products' => Api\ProductController::class,
 ]);
 

@@ -4,9 +4,9 @@
     <div class="product-sidebar__filters">
         <div class="product-sidebar__filter">
             <h6 class="product-sidebar__filter-title">Categories</h6>
-            <ul class="product-sidebar__filter-options" data-bind-loop="filters.categories">
+            <ul class="product-sidebar__filter-options" data-bind-loop="categories">
                 <li class="product-sidebar__filter-toggle">
-                    <input type="radio" id="filter-cat-tshirt" data-bind-attrs="data-bind-event-args:filterArg,id:id" data-bind-event="change:product-filter"/>
+                    <input type="radio" id="filter-cat-tshirt" data-bind-attrs="data-bind-event-args:filterArg,id:id" data-bind-event="change:product-filter-category"/>
                     <label data-bind-attrs="for:id" class="active" data-bind-if="active" data-bind-content="label"></label>
                     <label data-bind-attrs="for:id" data-bind-if="!active" data-bind-content="label"></label>
                 </li>
@@ -29,28 +29,34 @@
     
         <div class="product-sidebar__filter">
             <h6 class="product-sidebar__filter-title">Price</h6>
-            <ul class="product-sidebar__filter-options">
-                    <li><a href="#">1$ - 10$</a></li>
-                    <li><a href="#">10$ - 20$</a></li>
-                    <li><a href="#">> 20$</a></li>
+            <ul class="product-sidebar__filter-options" data-bind-loop="filters.price">
+                <li class="product-sidebar__filter-toggle inline">
+                    <label data-bind-attrs="for:id" class="active" data-bind-content="label"></label>
+                    <input type="text" data-bind-attrs="data-bind-event-args:filterArg,id:id,value:value" data-bind-event="blur:product-filter-price"/>
+                    <button>»</button>
+                </li>
             </ul>
         </div>
         
         <div class="product-sidebar__filter">
-            <h6 class="product-sidebar__filter-title">Colors</h6>
-            <ul class="product-sidebar__filter-options">
-                    <li><a href="#">white</a></li>
-                    <li><a href="#">red</a></li>
-                    <li><a href="#">black</a></li>
+            <h6 class="product-sidebar__filter-title">Body Type</h6>
+            <ul class="product-sidebar__filter-options" data-bind-loop="filters.body">
+                <li class="product-sidebar__filter-toggle">
+                    <input type="radio" data-bind-attrs="data-bind-event-args:filterArg,id:id" data-bind-event="change:product-filter-body"/>
+                    <label data-bind-attrs="for:id" class="active" data-bind-if="active" data-bind-content="label"></label>
+                    <label data-bind-attrs="for:id" data-bind-if="!active" data-bind-content="label"></label>
+                </li>
             </ul>
         </div>
         
         <div class="product-sidebar__filter">
-            <h6 class="product-sidebar__filter-title">Reviews</h6>
-            <ul class="product-sidebar__filter-options">
-                    <li><a href="#">5/5</a></li>
-                    <li><a href="#">4/5</a></li>
-                    <li><a href="#">3/5</a></li>
+            <h6 class="product-sidebar__filter-title">Sizes</h6>
+            <ul class="product-sidebar__filter-options" data-bind-loop="filters.sizes">
+                <li class="product-sidebar__filter-toggle">
+                    <input type="radio" data-bind-attrs="data-bind-event-args:filterArg,id:id" data-bind-event="change:product-filter-sizes"/>
+                    <label data-bind-attrs="for:id" class="active" data-bind-if="active" data-bind-content="label"></label>
+                    <label data-bind-attrs="for:id" data-bind-if="!active" data-bind-content="label"></label>
+                </li>
             </ul>
         </div>          
     </div>
@@ -63,7 +69,7 @@
         <div data-bind-loop="products" class="products-list__grid">
             <article class="products-list__item">
                 <a data-bind-attrs="href:id" data-bind-fn="(val) => `/products/${val}`">
-                    <img data-bind-attrs="src:images[0].path" class="products-list__item-image" src="http://placehold.it/100x100">
+                    <img data-bind-attrs="src:photo" class="products-list__item-image" src="http://placehold.it/100x100">
                     <p data-bind-content="price" data-bind-fn="(val) => `${val.toFixed(2)} $`"><value></value></p>
                     <h2 data-bind-content="name"></h2>
                     <h2 data-bind-attrs="title:name">check the title</h2>

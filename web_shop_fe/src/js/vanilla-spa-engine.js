@@ -26,7 +26,7 @@ class Router {
     }
 
     get model() {
-        return this.currentRoute.remoteModel ? 
+        const computedModel = this.currentRoute.remoteModel ? 
             (async () => {
                 try {
                     return {...this.currentRoute.staticModel, ...await this.currentRoute?.remoteModel()}
@@ -35,7 +35,10 @@ class Router {
                 return {};  // fallback value
                 }
             })() :
-            this.currentRoute.staticModel
+            this.currentRoute.staticModel;
+        
+        console.info('model rehydrated', computedModel)
+        return computedModel;
     }
 
     onNavigateRequest = async (path) => {
@@ -67,8 +70,8 @@ class Router {
 
         const $oldActiveLink = document.querySelector(`#main-menu .main-menu__link.active`);
         $oldActiveLink?.classList.remove('active');
-        const $newActiveLink = document.querySelector(`#main-menu .main-menu__link[href="${relativePath}"]`);
-        $newActiveLink.classList.add('active');
+        const $newActiveLink = document.querySelector(`#main-menu .main-menu__link[href*="${relativePath}"]`);
+        $newActiveLink?.classList.add('active');
 
         this.appContainer.innerHTML = await this.templateEngine.renderTemplate(route);
         window.sessionStorage.setItem('app-container', this.appContainer.innerHTML);
@@ -266,7 +269,7 @@ class TemplateEngine {
                 if(eventDetail && eventDetail.groups.trigger && eventDetail.groups.eventName) {
                     let eventArgs = eventDetail.groups.args ?? $el.dataset?.bindEventArgs;
                     const event = (e) => {
-                        window.EVENTBUS.emit(eventDetail.groups.eventName, {args: eventArgs})
+                        window.EVENTBUS.emit(eventDetail.groups.eventName, {args: eventArgs, origin: e})
                     }
                     $el.addEventListener(eventDetail.groups.trigger, event);
                 }
