@@ -19,6 +19,10 @@ a {
     width: 100%;
 }
 
+#app.loading *{
+    opacity: 0;
+}
+
 #app::before {
     content: ' Loading... ';
     width: 100%;
