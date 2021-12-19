@@ -224,8 +224,8 @@ const queryString = Object.values(FILTERS).filter(v => v.length > 0).join('&');
 const addToCart = async(e) => {
     const productId = Number.parseInt(e.detail.args);
     
-    const {products} = await App.getCurrentModel();
-    const productInstance = products.find(p => p.id === productId);
+    const {products, product} = await App.getCurrentModel();
+    const productInstance = products?.find(p => p.id === productId) ?? product;
 
     ShoppingCart.add(productInstance)
 }
