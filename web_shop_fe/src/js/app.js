@@ -7,9 +7,13 @@ import '../css/layout.css';
 
 import VanillaSpaEngine from './vanilla-spa-engine.js';
 import EventBus from './event-bus.js';
+import ShopCart from './shop-cart';
+
+const ShoppingCart = new ShopCart('#cart-counter');
 
 const APP_CONTAINER = document.getElementById('app');
-const ENABLE_CACHING = false;
+const ENABLE_TEMPLATE_CACHING = false;
+const ENABLE_MODEL_CACHING = false;
 const BASE_API_URL = 'http://127.0.0.1:8000/api';
 
 let FILTERS = {categories:'', minPrice: '', maxPrice: '', body: '', sizes: ''};
@@ -37,10 +41,11 @@ const availableFilters = {
     ],
 };
 
-const fetchRemoteModel = async(contentUrl, model, ignoreCache = false) => {    
+const fetchRemoteModel = async(contentUrl, model, ignoreCache = !ENABLE_MODEL_CACHING) => {    
     const absoluteUrl = BASE_API_URL + contentUrl;
     
     if (window.localStorage.getItem(absoluteUrl) !== null && !ignoreCache) {
+        console.log(JSON.parse(window.localStorage.getItem(absoluteUrl)))
         return JSON.parse(window.localStorage.getItem(absoluteUrl));
     }
     console.log('fetching remote model')
@@ -48,8 +53,7 @@ const fetchRemoteModel = async(contentUrl, model, ignoreCache = false) => {
     return await fetch(absoluteUrl)
     // The API call was successful!
     .then(async (response) => {
-        return {
-        ...{[model] : await response.json(), [`${[model]}Headers`]: response.headers}}
+        return {[model] : await response.json(), [`${[model]}Headers`]: response.headers}
     })
     .then((json) => {
         window.localStorage.setItem(absoluteUrl, JSON.stringify(json));
@@ -57,7 +61,7 @@ const fetchRemoteModel = async(contentUrl, model, ignoreCache = false) => {
     })
 }
 
-const fetchRemoteModels = async(resources, ignoreCache = false) => {
+const fetchRemoteModels = async(resources, ignoreCache) => {
     return await Promise.all(
         resources.map(async (curr, idx, a) => (await fetchRemoteModel(curr.contentUrl, curr.model, ignoreCache)))
     ).then(x => x.reduce((acc, val) => {
@@ -69,7 +73,7 @@ const routes = {
     '/' : {
         path: '/',
         template: '/_products-home.html',
-        remoteModel: async() => await fetchRemoteModel('/products', 'products', true),
+        remoteModel: async() => await fetchRemoteModel('/products', 'products'),
         staticModel: {
             user_name: 'Tiago',
             labelTitle: 'test title',
@@ -97,7 +101,7 @@ const routes = {
         remoteModel: async() => await fetchRemoteModels([
             {contentUrl:'/products', model:'products'},
             {contentUrl:'/categories', model:'categories'},
-        ], true).then(models => {
+        ]).then(models => {
             const {categories, productsHeaders} = models;
 
             const filterCats = [
@@ -114,13 +118,12 @@ const routes = {
                 }
              }).sort((a, b) => a.order - b.order);
 
-             if(productsHeaders) {
-                 if(productsHeaders.has('X-Min-Price'))
+             if(Object.keys(productsHeaders).length > 0 && productsHeaders.constructor === Object) {
+                if(productsHeaders.has('X-Min-Price')) 
                     availableFilters.price.find(p => p.id === 'filter-price-min').value = productsHeaders.get('X-Min-Price')
                 if(productsHeaders.has('X-Max-Price'))
                     availableFilters.price.find(p => p.id === 'filter-price-max').value = productsHeaders.get('X-Max-Price')
              }
-             console.log(availableFilters)
 
             return models;
         })
@@ -142,6 +145,26 @@ const routes = {
         
         remoteModel: async() => await fetchRemoteModel(`/products/${Number.parseInt(window.history.state.id)}`, 'product')
     },
+
+    '/cart' : {
+        path: '/cart',
+        template: '/_shop-cart.html',
+        remoteModel: async() => await({'cartCost': await ShoppingCart.cost()}),
+        staticModel: {
+            user_name: 'Tiago',
+            labelTitle: 'test title',
+            xpto: 'a xpto val',
+            xpto2: 'a xpto2 title',
+            cart: (() => {
+                return ShoppingCart.get();
+            })(),
+            /*cartCost: (() => {
+                return ShoppingCart.cost;
+            })()*/
+        },
+        
+        //remoteModel: async() => await fetchRemoteModel(`/products/${Number.parseInt(window.history.state.id)}`, 'product')
+    },    
 }
 
 const EVENTBUS = window.EVENTBUS = new EventBus();
@@ -149,7 +172,7 @@ const EVENTBUS = window.EVENTBUS = new EventBus();
 const App = new VanillaSpaEngine({
     routes: routes,
     appContainer: APP_CONTAINER,
-    enableCaching: ENABLE_CACHING,
+    enableCaching: ENABLE_TEMPLATE_CACHING,
 });
 
 
@@ -167,7 +190,7 @@ if(filterType === 'price') {
 const queryString = Object.values(FILTERS).filter(v => v.length > 0).join('&');
 
  App.updateCurrentModel({
-    remoteModel: async() => await fetchRemoteModel(`/products?${queryString}`, 'products', true),
+    remoteModel: async() => await fetchRemoteModel(`/products?${queryString}`, 'products'),
 
     staticModel: {
         categories: (() => {
@@ -198,7 +221,63 @@ const queryString = Object.values(FILTERS).filter(v => v.length > 0).join('&');
  
 }
 
+const addToCart = async(e) => {
+    const productId = Number.parseInt(e.detail.args);
+    
+    const {products} = await App.getCurrentModel();
+    const productInstance = products.find(p => p.id === productId);
+
+    ShoppingCart.add(productInstance)
+}
+
+const changeQuantity = async(e, amount) => {
+    const productId = Number.parseInt(e.detail.args);
+    
+    const model = await App.getCurrentModel();
+    const cartItem = model.cart.find(c => c.product.id === productId);
+
+    ShoppingCart.changeQuantity(cartItem, amount);
+
+    App.updateCurrentModel({
+        remoteModel: async() => await({'cartCost': await ShoppingCart.cost()}),
+        staticModel: {
+            ...model
+        }
+    })
+}
+
+const clearCart = async() => {
+    ShoppingCart.clear();
+    const model = await App.getCurrentModel();
+    App.updateCurrentModel({
+        staticModel: {
+            ...model,
+            ...{cart: []}
+        }
+    })
+}
+
+const removeFromCart = async(e) => {
+    const productId = Number.parseInt(e.detail.args);
+    
+    const model = await App.getCurrentModel();
+    const cartItem = model.cart.find(c => c.product.id === productId);
+    ShoppingCart.remove(cartItem);
+
+    App.updateCurrentModel({
+        staticModel: {
+            ...model,
+        }
+    })
+}
+
+
 EVENTBUS.on('product-filter-category', (e) => filter(e, 'categories'))
 EVENTBUS.on('product-filter-body', (e) => filter(e, 'body'))
 EVENTBUS.on('product-filter-price', (e) => filter(e, 'price'))
 EVENTBUS.on('product-filter-sizes', (e) => filter(e, 'sizes'))
+EVENTBUS.on('product-add-to-cart', (e) => addToCart(e))
+EVENTBUS.on('product-increment-cart', (e) => changeQuantity(e, +1))
+EVENTBUS.on('product-decrement-cart', (e) => changeQuantity(e, -1))
+EVENTBUS.on('product-clear-cart', (e) => clearCart())
+EVENTBUS.on('product-remove-from-cart', (e) => removeFromCart(e))
