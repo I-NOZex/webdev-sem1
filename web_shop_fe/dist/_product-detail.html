@@ -1,0 +1,12 @@
+
+<section class="product-detail" >
+    <article class="products-home__item" >
+        <a href="#">
+            <img data-bind-attrs="src:product.photo" src="http://placehold.it/100x100">
+            <p data-bind-content="product.price" data-bind-fn="(val) => `${val.toFixed(2)} Dkk`">$</p>
+            <h2 data-bind-content="product.name"></h2>
+        </a> 
+            <button data-bind-attrs="data-bind-event-args:product.id" data-bind-event="click:product-add-to-cart">Add to cart</button>
+    </article>
+
+</section>
