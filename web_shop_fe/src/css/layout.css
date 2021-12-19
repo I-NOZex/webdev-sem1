@@ -146,10 +146,16 @@ a {
 }
 
 .actions__item {
-    display: block;
+    display: flex;
+    align-items: center;
+    line-height: 1rem;    
     text-transform: uppercase;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;    
+}
+
+.actions__item .label{
+    margin-left: 0.5rem; 
 }
 
 /* social-info */
@@ -264,6 +270,13 @@ a {
 .products-cart__item-image {
     height: auto;
     max-width: 150px;
+}
+
+.product-detail {
+    display: flex;
+    padding: 2.5rem;
+    flex-direction: column;
+    width: 100%;
 }
 
 
