@@ -44,9 +44,9 @@ class ShopCart {
         return match;
     }    
 
-    remove (product) {
-        const match = cart.findIndex(c => c.product.id === product.id);
-        if(match) {
+    remove (cartItem) {
+        const match = cart.findIndex(c => c.product.id === cartItem.product.id);
+        if(match >= 0) {
             cart.splice(match, 1);
         }
         this.saveShopCart();
