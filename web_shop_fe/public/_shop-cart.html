@@ -1,0 +1,59 @@
+<section class="products-cart">
+    <h1>Shopping cart</h1>
+
+    <!--<div data-bind-loop="cart" class="products-cart__list">
+        <article class="products-cart__item">
+                <img data-bind-attrs="src:product.photo" class="products-cart__item-image" src="http://placehold.it/100x100">
+                <p data-bind-content="product.price" data-bind-fn="(val) => `${val.toFixed(2)} Dkk`"><value></value></p>
+                <a data-bind-attrs="href:product.id">
+                    <h2 data-bind-content="product.name"></h2>
+                </a>
+        </article>
+    </div>-->
+
+    <table>
+        <thead>
+            <td></td>
+            <td>Name</td>
+            <td>Price</td>
+            <td>Quantity</td>
+            <td></td>
+        </thead>
+
+        <tbody  data-bind-loop="cart">
+            <tr>
+                <td>
+                    <img data-bind-attrs="src:product.photo" class="products-cart__item-image">
+                </td>
+                <td data-bind-content="product.name">
+                </td>
+                <td data-bind-content="product.price" data-bind-fn="(val) => `${val.toFixed(2)} Dkk`"></td>
+                <td data-bind-content="quantity">
+                    <button data-bind-attrs="data-bind-event-args:product.id" data-bind-event="click:product-decrement-cart">-</button>
+                    <value></value>
+                    <button data-bind-attrs="data-bind-event-args:product.id" data-bind-event="click:product-increment-cart">+</button>
+                </td>
+                <td>
+                    <button data-bind-attrs="data-bind-event-args:product.id" data-bind-event="click:product-remove-from-cart">x</button>
+                </td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td data-bind-content="cartCost" data-bind-fn="(val) => `${val.toFixed(2)} Dkk`"></td>
+                <td>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <button>Checkout</button>
+        <button data-bind-event="click:product-clear-cart">Clear all</button>
+    </div>
+</section>

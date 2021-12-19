@@ -10,6 +10,7 @@ class BindValue extends HTMLElement {
 }
   
 const BIND_ATTRIBUTES = '[data-bind-content],[data-bind-attrs],[data-bind-loop],[data-bind-if]';
+let inMemoryModel = null;
 
 class Router {
     constructor(_routes, _templateEngine) {
@@ -35,10 +36,14 @@ class Router {
                 return {};  // fallback value
                 }
             })() :
-            this.currentRoute.staticModel;
-        
+            (async () => this.currentRoute.staticModel)();
+        inMemoryModel = computedModel;
         console.info('model rehydrated', computedModel)
         return computedModel;
+    }
+
+    get inMemoryModel() {
+        return inMemoryModel ?? this.model;
     }
 
     onNavigateRequest = async (path) => {
@@ -299,5 +304,9 @@ export default class VanillaSpaEngine {
         staticModel && (this.router.currentRoute.staticModel = {...this.router.currentRoute.staticModel, ...staticModel});
 
         this.router.onModelUpdated();
+    }
+
+    getCurrentModel() {
+        return this.router.inMemoryModel
     }
 }

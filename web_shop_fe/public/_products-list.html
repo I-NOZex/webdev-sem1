@@ -70,10 +70,10 @@
             <article class="products-list__item">
                 <a data-bind-attrs="href:id" data-bind-fn="(val) => `/products/${val}`">
                     <img data-bind-attrs="src:photo" class="products-list__item-image" src="http://placehold.it/100x100">
-                    <p data-bind-content="price" data-bind-fn="(val) => `${val.toFixed(2)} $`"><value></value></p>
+                    <p data-bind-content="price" data-bind-fn="(val) => `${val.toFixed(2)} Dkk`"><value></value></p>
                     <h2 data-bind-content="name"></h2>
-                    <h2 data-bind-attrs="title:name">check the title</h2>
                 </a>
+                <button data-bind-attrs="data-bind-event-args:id" data-bind-event="click:product-add-to-cart">Add to cart</button>
             </article>
         </div>
     </section>
